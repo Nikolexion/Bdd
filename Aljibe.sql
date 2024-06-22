@@ -429,3 +429,17 @@ SELECT c.rut_conductor AS rut,
 FROM proyecto_semestral.conductor C
 JOIN proyecto_semestral.empleado E ON e.rut_empleado = c.rut_conductor
 WHERE c.certificado_ds41 = TRUE;
+
+-- Datos sobre cambio de vehiculo
+SELECT
+    cv.rut_conductor AS rut_conductor,
+    cv.patente AS patente,
+    cv.fecha_inicio AS fecha_inicio,
+    cv.fecha_termino AS fecha_termino,
+    c.motivo_cambio AS motivo_cambio,
+    c.autor_cambio AS autor_cambio
+FROM
+    proyecto_semestral.conductor_en_vehiculo cv
+JOIN
+    proyecto_semestral.cambio c ON cv.id_cambio = c.id_cambio
+WHERE fecha_termino IS NOT NULL;

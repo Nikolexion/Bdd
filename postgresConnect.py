@@ -16,7 +16,7 @@ with st.sidebar:
     st.image("resources\LOGO_LOGISTICA_Y_DISTRIBUCION-1.png", width=150,use_column_width=True)
     selected = option_menu(
         menu_title= "Aljibe App 🚛",
-        options=["Home", "Empleados", "Vehículos", "Rutas actuales", "Rendiciones", "Recorridos anteriores", "Cambios de vehículo"],
+        options=["Home", "Empleados", "Vehículos", "Rutas actuales", "Rendiciones", "Recorridos", "Cambios de vehículo"],
         icons=["house", "person-arms-up", "truck", "geo-alt", "cash-stack", "clock-history", "tools"],
         menu_icon="list",
         default_index=0,
@@ -45,13 +45,27 @@ if selected == "Home":
 
     consulta = qf.run_query("SELECT re.patente AS patente_vehiculo, e.nombres_empleado AS nombre_conductor, e.apellido1_empleado AS apellido_paterno, e.apellido2_empleado AS apellido_materno, es.capacidad AS capacidad_estanque, r.nombre AS nombre_ruta, re.fecha AS fecha FROM proyecto_semestral.recorrido re JOIN proyecto_semestral.conductor c ON re.rut_conductor = c.rut_conductor JOIN proyecto_semestral.empleado e ON c.rut_conductor = e.rut_empleado JOIN proyecto_semestral.vehiculo v ON re.patente = v.patente JOIN proyecto_semestral.ruta r ON re.nombre_ruta = r.nombre JOIN proyecto_semestral.estanque es ON re.id_estanque = es.id WHERE re.fecha = CURRENT_DATE;")
 
-    """ Conductores, vehículos y rutas asignadas para el día de hoy """
+    st.markdown("""
+    <style>
+    .big-font {
+        font-size: 22px !important;
+    }
+    </style>
+    <p class="big-font">Conductores, vehículos y rutas asignadas para el día de hoy</p>
+    """, unsafe_allow_html=True)
+    
     dataConsulta = pd.DataFrame(consulta)
-    dataConsulta.columns = ["patente_vehiculo","nombre_conductor","apellido_paterno","apellido_materno","capacidad_estanque","nombre_ruta","fecha"]
+    dataConsulta.columns = ["patente_vehiculo","nombre_conductor","apellido_paterno","ape   llido_materno","capacidad_estanque","nombre_ruta","fecha"]
 
     st.dataframe(dataConsulta, use_container_width=True, hide_index=True)
-
-    """ Rendiciones pendientes """
+    st.markdown("""
+    <style>
+    .big-font {
+        font-size: 22px !important;
+    }
+    </style>
+    <p class="big-font">Rendiciones pendientes</p>
+    """, unsafe_allow_html=True)
 
     rendiciones = qf.run_query("SELECT  r.Id, r.rut_empleado, r.Tipo_rendicion, r.Estado, r.PDF_doc_asociado, r.Monto FROM  proyecto_semestral.rendicion r WHERE  Estado = 'Pendiente';")
 
@@ -75,7 +89,15 @@ if selected == "Empleados":
     # Employees section
     
     rows = qf.run_query("SELECT * FROM proyecto_semestral.empleado")
-    """ Todos los empleados """
+    st.markdown("""
+    <style>
+    .big-font {
+        font-size: 22px !important;
+    }
+    </style>
+    <p class="big-font">Todos los empleados </p>
+    """, unsafe_allow_html=True)
+
     data = pd.DataFrame(rows)
     data.columns = ["rut_empleado","nombres_empleado","apellido1_empleado","apellido2_empleado","cargo","empresa_asociada"]
 
@@ -85,32 +107,122 @@ if selected == "Vehículos":
     # Vehicles section
     st.title("Vehículos")
     st.write("En esta sección se muestran los vehículos de la empresa Aljibe.")
+    vehiculos = qf.run_query("SELECT * FROM proyecto_semestral.vehiculo")
+
+    st.markdown("""
+    <style>
+    .big-font {
+        font-size: 22px !important;
+    }
+    </style>
+    <p class="big-font">Todos los vehículos</p>
+    """, unsafe_allow_html=True)
+
+    dataVehiculos = pd.DataFrame(vehiculos)
+    dataVehiculos.columns = ["patente","marca","modelo","año","ID_revision","ID_dominio_vigente","tipo_vehiculo","RUT_empresa","PDF_permiso_circulacion","PDF_SOAP","PDF_contrato_gps"]
+
+    st.dataframe(dataVehiculos, use_container_width=True, hide_index=True)
 
 if selected == "Rutas actuales":
     # Current routes section
     st.title("Rutas actuales")
     st.write("En esta sección se muestran las rutas actuales de los vehículos de la empresa Aljibe.")
+    rutas = qf.run_query("SELECT * FROM proyecto_semestral.ruta")
+
+    st.markdown("""
+    <style>
+    .big-font {
+        font-size: 22px !important;
+    }
+    </style>
+    <p class="big-font">Todas las rutas</p>
+    """, unsafe_allow_html=True)
+
+    dataRutas = pd.DataFrame(rutas)
+    dataRutas.columns = ["nombre","comuna"]
+
+    st.dataframe(dataRutas, use_container_width=True, hide_index=True)
 
 if selected == "Rendiciones":
     # Renditions section
     st.title("Rendiciones")
     st.write("En esta sección se muestran las rendiciones de los empleados de la empresa Aljibe.")
 
-if selected == "Recorridos anteriores":
+    rendicionesPendientes = qf.run_query("SELECT  r.rut_empleado, r.Tipo_rendicion, r.Estado, r.PDF_doc_asociado, r.Monto FROM proyecto_semestral.rendicion r WHERE Estado = 'Pendiente';")
+    rendiciones = qf.run_query("SELECT  r.rut_empleado, r.Tipo_rendicion, r.Estado, r.PDF_doc_asociado, r.Monto FROM proyecto_semestral.rendicion r;")
+
+    st.markdown("""
+    <style>
+    .big-font {
+        font-size: 22px !important;
+    }
+    </style>
+    <p class="big-font">Rendiciones pendientes</p>
+    """, unsafe_allow_html=True)
+    dataRendicionesPendientes = pd.DataFrame(rendicionesPendientes)
+    dataRendicionesPendientes.columns = ["rut_empleado","tipo_rendicion","estado","pdf_doc_asociado","monto"] 
+
+    st.dataframe(dataRendicionesPendientes, use_container_width=True, hide_index=True)
+
+    st.markdown("""
+    <style>
+    .big-font {
+        font-size: 22px !important;
+    }
+    </style>
+    <p class="big-font">Todas las rendiciones</p>
+    """, unsafe_allow_html=True)
+
+    dataRendiciones = pd.DataFrame(rendiciones)
+    dataRendiciones.columns = ["rut_empleado","tipo_rendicion","estado","pdf_doc_asociado","monto"]
+
+    st.dataframe(dataRendiciones, use_container_width=True, hide_index=True)
+
+if selected == "Recorridos":
     # Previous routes section
     st.title("Recorridos anteriores")
     st.write("En esta sección se muestran los recorridos anteriores de los vehículos de la empresa Aljibe.")
+    recorridos = qf.run_query("SELECT * FROM proyecto_semestral.recorrido")
+    
+    st.markdown("""
+    <style>
+    .big-font {
+        font-size: 22px !important;
+    }
+    </style>
+    <p class="big-font">Todos los recorridos</p>
+    """, unsafe_allow_html=True)
+    
+    dataRecorridos = pd.DataFrame(recorridos)
+    dataRecorridos.columns = ["rut_conductor","patente","nombre_ruta","fecha","id_estanque"]
+
+    st.dataframe(dataRecorridos, use_container_width=True, hide_index=True)
 
 if selected == "Cambios de vehículo":
     # Vehicle changes section
     st.title("Cambios de vehículo")
     st.write("En esta sección se muestran los cambios de vehículo de los conductores de la empresa Aljibe.")
 
+    cambios = qf.run_query("SELECT cv.rut_conductor AS rut_conductor, cv.patente AS patente, cv.fecha_inicio AS fecha_inicio, cv.fecha_termino AS fecha_termino, c.motivo_cambio AS motivo_cambio, c.autor_cambio AS autor_cambio FROM proyecto_semestral.conductor_en_vehiculo cv JOIN proyecto_semestral.cambio c ON cv.id_cambio = c.id_cambio WHERE fecha_termino IS NOT NULL;")
+    st.markdown("""
+    <style>
+    .big-font {
+        font-size: 22px !important;
+    }
+    </style>
+    <p class="big-font">Todos los vehiculos</p>
+    """, unsafe_allow_html=True)
+
+    dataCambios = pd.DataFrame(cambios)
+    dataCambios.columns = ["rut_conductor","patente","fecha_inicio","fecha_termino","motivo_cambio","autor_cambio"]
+
+    st.dataframe(dataCambios, use_container_width=True, hide_index=True)
+
+    
 
 
-""" 
-query = "INSERT INTO proyecto_semestral.empleado (rut_empleado, nombres_empleado, apellido1_empleado, apellido2_empleado, cargo, empresa_asociada) VALUES (%s, %s, %s, %s, %s, %s)"
-data = ('12345678-9', 'Juan', 'Pérez', 'González', 'Administrativo', '01234567890')
 
-insert_data(query, data)
- """
+#query = "INSERT INTO proyecto_semestral.empleado (rut_empleado, nombres_empleado, apellido1_empleado, apellido2_empleado, cargo, empresa_asociada) VALUES (%s, %s, %s, %s, %s, %s)"
+#data = ('12345678-9', 'Juan', 'Pérez', 'González', 'Administrativo', '01234567890')
+#insert_data(query, data)
+
