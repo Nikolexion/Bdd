@@ -6,8 +6,14 @@ from streamlit_lottie import st_lottie
 from streamlit_option_menu import option_menu
 
 st.set_page_config(page_title="Aljibe", page_icon="🚛", layout="centered")
-lottie_coding = utils.load_lottieurl("https://lottie.host/f9c20961-d879-4345-9e5f-566e4b16a5f5/APTiUuxZQl.json")
+
+# Carga de animaciones Lottie
+lottie_truck = utils.load_lottieurl("https://lottie.host/f9c20961-d879-4345-9e5f-566e4b16a5f5/APTiUuxZQl.json")
+lottie_employee = utils.load_lottieurl("https://lottie.host/984d9209-266d-427e-a312-1017a42fc389/MqgsBYt17v.json")
+
+# Menú lateral
 with st.sidebar:
+    st.image("resources\LOGO_LOGISTICA_Y_DISTRIBUCION-1.png", width=150,use_column_width=True)
     selected = option_menu(
         menu_title= "Aljibe App 🚛",
         options=["Home", "Empleados", "Vehículos", "Rutas actuales", "Rendiciones", "Recorridos anteriores", "Cambios de vehículo"],
@@ -18,7 +24,7 @@ with st.sidebar:
 if selected == "Home":
     # Header section
     st.title("Aljibe App 🚛")
-    st.subheader(":white[Monitoreo de la flota de vehículos y personal de Aljibe]", divider="rainbow")
+    st.subheader(":white[Distribuidora de agua potable y recursos varios]", divider="rainbow")
     left_column, right_column = st.columns(2,)
     with left_column: 
         st.markdown("""
@@ -30,32 +36,14 @@ if selected == "Home":
         <p class="big-font">Bienvenido a la aplicación de monitoreo de la flota de vehículos y personal de Aljibe. Selecciona una opción del menú lateral para comenzar.</p>
         """, unsafe_allow_html=True)
     with right_column:
-        st_lottie(lottie_coding, height=250, key = "truck")
+        st_lottie(lottie_truck, height=250, key = "truck")
 
     # Ejemplo de uso
-    rows = qf.run_query("SELECT * FROM proyecto_semestral.empleado")
-    if rows is not None:
-        for row in rows:
-            print(row)
     if __name__ == "__main__":
         qf.connect_to_database()
     conn = qf.connect_to_database()
 
-    @ st.cache_data
-    def run_query(query):
-        with conn.cursor() as cur:
-            cur.execute(query)
-            return cur.fetchall()
-        
-    rows = run_query("SELECT * FROM proyecto_semestral.empleado")
-    """ Todos los empleados """
-    data = pd.DataFrame(rows)
-    data.columns = ["rut_empleado","nombres_empleado","apellido1_empleado","apellido2_empleado","cargo","empresa_asociada"]
-
-
-    st.dataframe(data, use_container_width=True, hide_index=True)
-
-    consulta = run_query("SELECT re.patente AS patente_vehiculo, e.nombres_empleado AS nombre_conductor, e.apellido1_empleado AS apellido_paterno, e.apellido2_empleado AS apellido_materno, es.capacidad AS capacidad_estanque, r.nombre AS nombre_ruta, re.fecha AS fecha FROM proyecto_semestral.recorrido re JOIN proyecto_semestral.conductor c ON re.rut_conductor = c.rut_conductor JOIN proyecto_semestral.empleado e ON c.rut_conductor = e.rut_empleado JOIN proyecto_semestral.vehiculo v ON re.patente = v.patente JOIN proyecto_semestral.ruta r ON re.nombre_ruta = r.nombre JOIN proyecto_semestral.estanque es ON re.id_estanque = es.id WHERE re.fecha = CURRENT_DATE;")
+    consulta = qf.run_query("SELECT re.patente AS patente_vehiculo, e.nombres_empleado AS nombre_conductor, e.apellido1_empleado AS apellido_paterno, e.apellido2_empleado AS apellido_materno, es.capacidad AS capacidad_estanque, r.nombre AS nombre_ruta, re.fecha AS fecha FROM proyecto_semestral.recorrido re JOIN proyecto_semestral.conductor c ON re.rut_conductor = c.rut_conductor JOIN proyecto_semestral.empleado e ON c.rut_conductor = e.rut_empleado JOIN proyecto_semestral.vehiculo v ON re.patente = v.patente JOIN proyecto_semestral.ruta r ON re.nombre_ruta = r.nombre JOIN proyecto_semestral.estanque es ON re.id_estanque = es.id WHERE re.fecha = CURRENT_DATE;")
 
     """ Conductores, vehículos y rutas asignadas para el día de hoy """
     dataConsulta = pd.DataFrame(consulta)
@@ -65,7 +53,7 @@ if selected == "Home":
 
     """ Rendiciones pendientes """
 
-    rendiciones = run_query("SELECT  r.Id, r.rut_empleado, r.Tipo_rendicion, r.Estado, r.PDF_doc_asociado, r.Monto FROM  proyecto_semestral.rendicion r WHERE  Estado = 'Pendiente';")
+    rendiciones = qf.run_query("SELECT  r.Id, r.rut_empleado, r.Tipo_rendicion, r.Estado, r.PDF_doc_asociado, r.Monto FROM  proyecto_semestral.rendicion r WHERE  Estado = 'Pendiente';")
 
     dataRendiciones = pd.DataFrame(rendiciones)
     dataRendiciones.columns = ["Id","rut_empleado","Tipo_rendicion","Estado","PDF_doc_asociado","Monto"]
@@ -74,7 +62,7 @@ if selected == "Home":
 
     """ Conductores con el certificado DS41 """
 
-    certds41 = run_query("SELECT c.rut_conductor AS rut, e.nombres_empleado AS nombre, e.apellido1_empleado AS apellido_materno, e.apellido2_empleado AS apellido_paterno FROM proyecto_semestral.conductor C JOIN proyecto_semestral.empleado E ON e.rut_empleado = c.rut_conductor WHERE c.certificado_ds41 = TRUE;")
+    certds41 = qf.run_query("SELECT c.rut_conductor AS rut, e.nombres_empleado AS nombre, e.apellido1_empleado AS apellido_materno, e.apellido2_empleado AS apellido_paterno FROM proyecto_semestral.conductor C JOIN proyecto_semestral.empleado E ON e.rut_empleado = c.rut_conductor WHERE c.certificado_ds41 = TRUE;")
 
     dataCertds41 = pd.DataFrame(certds41)
     dataCertds41.columns = ["rut","nombre","apellido_materno","apellido_paterno"]
@@ -82,9 +70,16 @@ if selected == "Home":
     st.dataframe(dataCertds41, use_container_width=True, hide_index=True)
 
 if selected == "Empleados":
-    # Employees section
     st.title("Empleados")
-    st.write("En esta sección se muestran los empleados de la empresa Aljibe.")
+    st_lottie(lottie_employee, height=250, key = "employee")
+    # Employees section
+    
+    rows = qf.run_query("SELECT * FROM proyecto_semestral.empleado")
+    """ Todos los empleados """
+    data = pd.DataFrame(rows)
+    data.columns = ["rut_empleado","nombres_empleado","apellido1_empleado","apellido2_empleado","cargo","empresa_asociada"]
+
+    st.dataframe(data, use_container_width=True, hide_index=True)
 
 if selected == "Vehículos":
     # Vehicles section
