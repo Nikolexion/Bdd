@@ -65,7 +65,7 @@ def run_query(query):
         return cur.fetchall()
     
 rows = run_query("SELECT * FROM proyecto_semestral.empleado")
-    
+""" Todos los empleados """
 data = pd.DataFrame(rows)
 data.columns = ["rut_empleado","nombres_empleado","apellido1_empleado","apellido2_empleado","cargo","empresa_asociada"]
 
@@ -74,11 +74,29 @@ st.dataframe(data, use_container_width=True, hide_index=True)
 
 consulta = run_query("SELECT re.patente AS patente_vehiculo, e.nombres_empleado AS nombre_conductor, e.apellido1_empleado AS apellido_paterno, e.apellido2_empleado AS apellido_materno, es.capacidad AS capacidad_estanque, r.nombre AS nombre_ruta, re.fecha AS fecha FROM proyecto_semestral.recorrido re JOIN proyecto_semestral.conductor c ON re.rut_conductor = c.rut_conductor JOIN proyecto_semestral.empleado e ON c.rut_conductor = e.rut_empleado JOIN proyecto_semestral.vehiculo v ON re.patente = v.patente JOIN proyecto_semestral.ruta r ON re.nombre_ruta = r.nombre JOIN proyecto_semestral.estanque es ON re.id_estanque = es.id WHERE re.fecha = CURRENT_DATE;")
 
+""" Conductores, vehículos y rutas asignadas para el día de hoy """
 dataConsulta = pd.DataFrame(consulta)
 dataConsulta.columns = ["patente_vehiculo","nombre_conductor","apellido_paterno","apellido_materno","capacidad_estanque","nombre_ruta","fecha"]
 
 st.dataframe(dataConsulta, use_container_width=True, hide_index=True)
 
+""" Rendiciones pendientes """
+
+rendiciones = run_query("SELECT  r.Id, r.rut_empleado, r.Tipo_rendicion, r.Estado, r.PDF_doc_asociado, r.Monto FROM  proyecto_semestral.rendicion r WHERE  Estado = 'Pendiente';")
+
+dataRendiciones = pd.DataFrame(rendiciones)
+dataRendiciones.columns = ["Id","rut_empleado","Tipo_rendicion","Estado","PDF_doc_asociado","Monto"]
+
+st.dataframe(dataRendiciones, use_container_width=True, hide_index=True)
+
+""" Conductores con el certificado DS41 """
+
+certds41 = run_query("SELECT c.rut_conductor AS rut, e.nombres_empleado AS nombre, e.apellido1_empleado AS apellido_materno, e.apellido2_empleado AS apellido_paterno FROM proyecto_semestral.conductor C JOIN proyecto_semestral.empleado E ON e.rut_empleado = c.rut_conductor WHERE c.certificado_ds41 = TRUE;")
+
+dataCertds41 = pd.DataFrame(certds41)
+dataCertds41.columns = ["rut","nombre","apellido_materno","apellido_paterno"]
+
+st.dataframe(dataCertds41, use_container_width=True, hide_index=True)
 
 """ 
 query = "INSERT INTO proyecto_semestral.empleado (rut_empleado, nombres_empleado, apellido1_empleado, apellido2_empleado, cargo, empresa_asociada) VALUES (%s, %s, %s, %s, %s, %s)"

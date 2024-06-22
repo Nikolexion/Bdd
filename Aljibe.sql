@@ -428,4 +428,4 @@ SELECT c.rut_conductor AS rut,
     e.apellido2_empleado AS apellido_paterno
 FROM proyecto_semestral.conductor C
 JOIN proyecto_semestral.empleado E ON e.rut_empleado = c.rut_conductor
-WHERE c.certificado_ds41 = TRUE
+WHERE c.certificado_ds41 = TRUE;
