@@ -65,8 +65,6 @@ if selected == "Empleados":
     st_lottie(lottie_employee, height=250, key = "employee")
     # Employees section
     
-    form.registrar_usuario()
-
     rows = qf.run_query("SELECT * FROM proyecto_semestral.empleado")
     st.markdown("""
     <style>
@@ -81,13 +79,13 @@ if selected == "Empleados":
     data.columns = ["rut_empleado","nombres_empleado","apellido1_empleado","apellido2_empleado","cargo","empresa_asociada"]
 
     st.dataframe(data, use_container_width=True, hide_index=True)
+    
+    form.registrar_usuario()
 
 if selected == "Vehículos":
     # Vehicles section
     st.title("Vehículos")
     st.write("En esta sección se muestran los vehículos de la empresa Aljibe.")
-
-    form.registrar_vehiculo()
 
     vehiculos = qf.run_query("SELECT * FROM proyecto_semestral.vehiculo")
 
@@ -101,14 +99,17 @@ if selected == "Vehículos":
     """, unsafe_allow_html=True)
 
     dataVehiculos = pd.DataFrame(vehiculos)
-    dataVehiculos.columns = ["patente","marca","modelo","año","ID_revision","ID_dominio_vigente","tipo_vehiculo","RUT_empresa","PDF_permiso_circulacion","PDF_SOAP","PDF_contrato_gps"]
+    dataVehiculos.columns = ["patente","marca","modelo","año","ID_revision","PDF_permiso_circulacion","PDF_SOAP","PDF_contrato_gps","ID_dominio_vigente","tipo_vehiculo","RUT_empresa"]
 
     st.dataframe(dataVehiculos, use_container_width=True, hide_index=True)
+    
+    form.registrar_vehiculo()
 
 if selected == "Rutas actuales":
     # Current routes section
     st.title("Rutas actuales")
     st.write("En esta sección se muestran las rutas actuales de los vehículos de la empresa Aljibe.")
+
     rutas = qf.run_query("SELECT * FROM proyecto_semestral.ruta")
 
     st.markdown("""
@@ -125,6 +126,8 @@ if selected == "Rutas actuales":
 
     st.dataframe(dataRutas, use_container_width=True, hide_index=True)
 
+    form.registrar_ruta()
+    
 if selected == "Rendiciones":
     # Renditions section
     st.title("Rendiciones")
@@ -159,6 +162,8 @@ if selected == "Rendiciones":
     dataRendiciones.columns = ["rut_empleado","tipo_rendicion","estado","pdf_doc_asociado","monto"]
 
     st.dataframe(dataRendiciones, use_container_width=True, hide_index=True)
+    
+    form.registrar_rendicion()
 
 if selected == "Historial de Recorridos":
     # Previous routes section
@@ -179,6 +184,8 @@ if selected == "Historial de Recorridos":
     dataRecorridos.columns = ["rut_conductor","patente","nombre_ruta","fecha","id_estanque"]
 
     st.dataframe(dataRecorridos, use_container_width=True, hide_index=True)
+
+    form.registrar_recorrido()
 
 if selected == "Cambios de vehículo":
     # Vehicle changes section

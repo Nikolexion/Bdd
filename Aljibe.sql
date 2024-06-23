@@ -238,12 +238,12 @@ INSERT INTO proyecto_semestral.estanque (material, capacidad) VALUES
 
 -- Tabla ruta
 INSERT INTO proyecto_semestral.ruta (nombre, comuna) VALUES
-    ('Ruta 1', 'Comuna A'),
-    ('Ruta 2', 'Comuna B'),
-    ('Ruta 3', 'Comuna C'),
-    ('Ruta 4', 'Comuna D'),
-    ('Ruta 5', 'Comuna E'),
-    ('Ruta 6', 'Comuna F'),
+    ('San Carlos Poniente', 'San Carlos'),
+    ('San Carlos Oriente', 'San Carlos'),
+    ('San Carlos Cordillera', 'San Carlos'),
+    ('Niquen', 'Niquen'),
+    ('Coihueco Cordillera', 'Coihueco'),
+    ('Coihueco Poniente', 'Coihueco'),
     ('Ruta 7', 'Comuna G'),
     ('Ruta 8', 'Comuna H'),
     ('Ruta 9', 'Comuna I'),
