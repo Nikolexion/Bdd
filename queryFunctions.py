@@ -1,4 +1,5 @@
 import psycopg2
+import streamlit as st
 
 def connect_to_database():
     try:
@@ -44,3 +45,17 @@ def insert_data(query, data):
             conn.close()  # Cierra la conexión
     else:
         print("La conexión a la base de datos no se estableció.")
+
+def insert_data_returning_id(query, data):
+    try:
+        conn = connect_to_database()
+        cursor = conn.cursor()
+        cursor.execute(query, data)
+        id_returned = cursor.fetchone()[0]
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return id_returned
+    except Exception as e:
+        st.error(f"Error inserting data: {e}")
+        return None
