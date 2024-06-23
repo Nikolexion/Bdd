@@ -55,6 +55,7 @@ def insert_data_returning_id(query, data):
         conn.commit()
         cursor.close()
         conn.close()
+        print("Datos insertados correctamente.")
         return id_returned
     except Exception as e:
         st.error(f"Error inserting data: {e}")

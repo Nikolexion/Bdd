@@ -241,7 +241,8 @@ if selected == "Conductores":
     dataConductoresds41.columns = ["rut_conductor","nombre_conductor","apellido1_conductor","apellido2_conductor","tipo_licencia","certificado_ds41"]
 
     st.dataframe(dataConductoresds41, use_container_width=True, hide_index=True)
-
+    
+    form.registrar_conductor()
     
 
 

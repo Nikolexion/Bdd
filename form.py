@@ -3,13 +3,13 @@ import queryFunctions as qf
 
 def registrar_usuario():    
 
-    with st.form(key='signup', clear_on_submit=True):
-        st.subheader(':blue[Ingresa los datos del nuevo empleado.]')
+    with st.form(key='signupEmpleado', clear_on_submit=True):
+        st.subheader(':blue[Ingrese los datos del nuevo empleado.]')
         st.write(':blue[Los datos marcados con (*) son obligatorios.]')
-        rut = st.text_input('RUT', placeholder='Ex: 12345678-9 *', )
-        nombre = st.text_input('Nombres', placeholder='Ingresa tus nombres *')
-        apellido1 = st.text_input('Primer apellido', placeholder='Ingresa tu primer apellido *')
-        apellido2 = st.text_input('Segundo apellido', placeholder='Ingresa tu segundo apellido *')
+        rut = st.text_input('RUT', placeholder='Ex: 12345678-9 *')
+        nombre = st.text_input('Nombres', placeholder='Ingrese tus nombres *')
+        apellido1 = st.text_input('Primer apellido', placeholder='Ingrese tu primer apellido *')
+        apellido2 = st.text_input('Segundo apellido', placeholder='Ingrese tu segundo apellido *')
         cargo  = st.selectbox('Cargo', ['Conductor','Administrativo','Nochero','Auxiliar','Trabajador Agricola','Bodeguero','Jefe Campo','Jefe Mecanica','Jefe Logistica','Administrador'], index=0)
         rut_empresa = st.text_input('Rut empresa asociada', placeholder='Ex: 912345678 *')
         b_signup = st.form_submit_button('Registrar')
@@ -19,15 +19,54 @@ def registrar_usuario():
             qf.insert_data(query, data)
             data = (rut, nombre, apellido1, apellido2, cargo, rut_empresa)
             st.success("Empleado registrado con éxito.", icon="🎉")
+
+def registrar_conductor():
+    with st.form(key='signupConductor', clear_on_submit=True):
+        st.subheader(':blue[Ingrese los datos del nuevo conductor.]')
+        st.write(':blue[Los datos marcados con (*) son obligatorios.]')
+        rut = st.text_input('RUT', placeholder='Ex: 12345678-9 *')
+        nombre = st.text_input('Nombres', placeholder='Ingrese tus nombres *')
+        apellido1 = st.text_input('Primer apellido', placeholder='Ingrese tu primer apellido *')
+        apellido2 = st.text_input('Segundo apellido', placeholder='Ingrese tu segundo apellido *')
+        cargo  = 'Conductor'
+        rut_empresa = st.text_input('Rut empresa asociada', placeholder='Ex: 912345678 *')
+        certds41 = st.checkbox('Certificado DS41')
+
+        pdf_carnet = st.text_input('Link PDF carnet', placeholder='Ingrese link *')
+        fecha_ven_carnet = st.date_input('Fecha de vencimiento carnet')
+        pdf_licencia = st.text_input('Link PDF licencia', placeholder='Ingrese link *')
+        fecha_ven_licencia = st.date_input('Fecha de vencimiento de licencia')
+        tipo_licencia  = st.selectbox('Tipo de licencia', ['A1','A2','A3','A4','A5','B'], index=0)
+        
+        b_signup = st.form_submit_button('Registrar')
+        if b_signup:
+            query = "INSERT INTO proyecto_semestral.empleado (rut_empleado, nombres_empleado, apellido1_empleado, apellido2_empleado, cargo, empresa_asociada) VALUES (%s, %s, %s, %s, %s, %s) "
+            data = (rut, nombre, apellido1, apellido2, cargo, rut_empresa)
+            qf.insert_data(query, data)
+            data = (rut, nombre, apellido1, apellido2, cargo, rut_empresa)
+
+            query_licencia = "INSERT INTO proyecto_semestral.licencia (pdf_licencia, fecha_ven_licencia, tipo_licencia) VALUES (%s, %s, %s) RETURNING ID_licencia"
+            data_licencia = (pdf_licencia, fecha_ven_licencia, tipo_licencia)
+            id_licencia = qf.insert_data_returning_id(query_licencia, data_licencia)
+
+            query_carnet = "INSERT INTO proyecto_semestral.carnet (pdf_carnet, fecha_ven_carnet) VALUES (%s, %s) RETURNING ID_carnet"
+            data_carnet = (pdf_carnet, fecha_ven_carnet)
+            id_carnet = qf.insert_data_returning_id(query_carnet, data_carnet)
+
+            query_conductor = "INSERT INTO proyecto_semestral.conductor (RUT_conductor, id_carnet, id_licencia, certificado_DS41) VALUES (%s, %s, %s, %s)"
+            data_conductor = (rut, id_carnet, id_licencia, certds41)
+            qf.insert_data(query_conductor, data_conductor)
+
+            st.success("Empleado registrado con éxito.", icon="🎉")
             
 
 def registrar_vehiculo():    
-    with st.form(key='signup', clear_on_submit=True):
-        st.subheader(':blue[Ingresa los datos del nuevo vehículo.]')
+    with st.form(key='signupVehiculo', clear_on_submit=True):
+        st.subheader(':blue[Ingrese los datos del nuevo vehículo.]')
         st.write(':blue[Los datos marcados con (*) son obligatorios.]')
         patente = st.text_input('Patente', placeholder='Ex: ABCD12 *')
-        marca = st.text_input('Marca', placeholder='Ingresa la marca del vehiculo *')
-        modelo = st.text_input('Modelo', placeholder='Ingresa el modelo del vehiculo *')
+        marca = st.text_input('Marca', placeholder='Ingrese la marca del vehiculo *')
+        modelo = st.text_input('Modelo', placeholder='Ingrese el modelo del vehiculo *')
         año = st.number_input('Año', min_value=1900, step=10)
         pdf_rev_tecnica = st.text_input('Link PDF revision tecnica', placeholder='Ingrese el link al PDF *')
         fecha_ven_rev_tec = st.date_input('Fecha de vencimiento Rev. Tecnica')
@@ -70,8 +109,8 @@ def registrar_vehiculo():
                 st.error(f"Error al registrar el vehículo: {e}")
 
 def registrar_ruta():
-    with st.form(key='signup', clear_on_submit=True):
-        st.subheader(':blue[Ingresa los datos de la nueva ruta.]')
+    with st.form(key='signupRuta', clear_on_submit=True):
+        st.subheader(':blue[Ingrese los datos de la nueva ruta.]')
         st.write(':blue[Los datos marcados con (*) son obligatorios.]')
         nombre = st.text_input('Nombre de la Ruta', placeholder='Ex: San Carlos Poniente *', )
         comuna = st.text_input('Comuna', placeholder='Ex: San Carlos *')
@@ -83,8 +122,8 @@ def registrar_ruta():
             st.success("Ruta registrada con éxito.", icon="🎉")
 
 def registrar_rendicion():
-    with st.form(key='signup', clear_on_submit=True):
-        st.subheader(':blue[Ingresa los datos de la nueva rendición.]')
+    with st.form(key='signupRendicion', clear_on_submit=True):
+        st.subheader(':blue[Ingrese los datos de la nueva rendición.]')
         st.write(':blue[Los datos marcados con (*) son obligatorios.]')
         rut_empleado = st.text_input('Rut del empleado', placeholder='Ingrese el rut del empleado *')
         tipo_rendicion = st.selectbox('Tipo de rendicion', ['Alimento', 'Combustible', 'Lubricantes', 'Adblue', 'Vulcanizacion', 'Transportes', 'Peaje', 'Repuestos', 'Estacionamiento', 'Hospedaje', 'Otros'], index=0)
@@ -99,8 +138,8 @@ def registrar_rendicion():
             
 
 def registrar_recorrido():
-    with st.form(key='signup', clear_on_submit=True):
-        st.subheader(':blue[Ingresa los datos del nuevo recorrido.]')
+    with st.form(key='signupRecorrido', clear_on_submit=True):
+        st.subheader(':blue[Ingrese los datos del nuevo recorrido.]')
         st.write(':blue[Los datos marcados con (*) son obligatorios.]')
         rut_conductor = st.text_input('Rut Conductor', placeholder='Ingrese Rut del conductor *')
         patente = st.text_input('Patente del vehículo', placeholder='Ingrese la patente del vehículo *')
@@ -123,8 +162,8 @@ def registrar_recorrido():
                 st.error(f"Error al registrar el recorrido: {e}")
 
 def registrar_cambio_vehiculo():
-    with st.form(key='signup', clear_on_submit=True):
-        st.subheader(':blue[Ingresa los datos del nuevo cambio de vehículo.]')
+    with st.form(key='signupCambioVehiculo', clear_on_submit=True):
+        st.subheader(':blue[Ingrese los datos del nuevo cambio de vehículo.]')
         st.write(':blue[Los datos marcados con (*) son obligatorios.]')
         rut_empleado = st.text_input('Rut del empleado', placeholder='Ingrese el rut del empleado *')
         patente = st.text_input('Patente del vehículo', placeholder='Ingrese la patente del vehículo *')
