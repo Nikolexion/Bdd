@@ -443,3 +443,23 @@ FROM
 JOIN
     proyecto_semestral.cambio c ON cv.id_cambio = c.id_cambio
 WHERE fecha_termino IS NOT NULL;
+
+
+-- Datos sobre conductores
+SELECT 
+    c.rut_conductor AS rut_conductor,
+    e.nombres_empleado AS nombre,
+    e.apellido1_empleado AS apellido_paterno,
+    e.apellido2_empleado AS apellido_materno,
+    l.tipo_licencia AS tipo_licencia,
+    l.fecha_ven_licencia AS fecha_ven_licencia,
+    ca.fecha_ven_carnet AS fecha_ven_carnet,
+    c.certificado_ds41 AS certificado_ds41
+FROM
+    proyecto_semestral.conductor c
+JOIN
+    proyecto_semestral.empleado e ON c.rut_conductor = e.rut_empleado
+JOIN
+    proyecto_semestral.licencia l ON c.id_licencia = l.id_licencia
+JOIN
+    proyecto_semestral.carnet ca ON c.id_carnet = ca.id_carnet;

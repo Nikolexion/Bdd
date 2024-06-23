@@ -4,6 +4,7 @@ import queryFunctions as qf
 import utils
 from streamlit_lottie import st_lottie
 from streamlit_option_menu import option_menu
+import form as form
 
 st.set_page_config(page_title="Aljibe", page_icon="🚛", layout="centered")
 
@@ -16,8 +17,8 @@ with st.sidebar:
     st.image("resources\LOGO_LOGISTICA_Y_DISTRIBUCION-1.png", width=150,use_column_width=True)
     selected = option_menu(
         menu_title= "Aljibe App 🚛",
-        options=["Home", "Empleados", "Vehículos", "Rutas actuales", "Rendiciones", "Recorridos", "Cambios de vehículo"],
-        icons=["house", "person-arms-up", "truck", "geo-alt", "cash-stack", "clock-history", "tools"],
+        options=["Home", "Empleados", "Vehículos", "Rutas actuales", "Rendiciones", "Historial de Recorridos", "Cambios de vehículo","Conductores"],
+        icons=["house", "person-arms-up", "truck", "geo-alt", "cash-stack", "clock-history", "tools","bi bi-car-front-fill"],
         menu_icon="list",
         default_index=0,
     )
@@ -58,36 +59,14 @@ if selected == "Home":
     dataConsulta.columns = ["patente_vehiculo","nombre_conductor","apellido_paterno","ape   llido_materno","capacidad_estanque","nombre_ruta","fecha"]
 
     st.dataframe(dataConsulta, use_container_width=True, hide_index=True)
-    st.markdown("""
-    <style>
-    .big-font {
-        font-size: 22px !important;
-    }
-    </style>
-    <p class="big-font">Rendiciones pendientes</p>
-    """, unsafe_allow_html=True)
-
-    rendiciones = qf.run_query("SELECT  r.Id, r.rut_empleado, r.Tipo_rendicion, r.Estado, r.PDF_doc_asociado, r.Monto FROM  proyecto_semestral.rendicion r WHERE  Estado = 'Pendiente';")
-
-    dataRendiciones = pd.DataFrame(rendiciones)
-    dataRendiciones.columns = ["Id","rut_empleado","Tipo_rendicion","Estado","PDF_doc_asociado","Monto"]
-
-    st.dataframe(dataRendiciones, use_container_width=True, hide_index=True)
-
-    """ Conductores con el certificado DS41 """
-
-    certds41 = qf.run_query("SELECT c.rut_conductor AS rut, e.nombres_empleado AS nombre, e.apellido1_empleado AS apellido_materno, e.apellido2_empleado AS apellido_paterno FROM proyecto_semestral.conductor C JOIN proyecto_semestral.empleado E ON e.rut_empleado = c.rut_conductor WHERE c.certificado_ds41 = TRUE;")
-
-    dataCertds41 = pd.DataFrame(certds41)
-    dataCertds41.columns = ["rut","nombre","apellido_materno","apellido_paterno"]
-
-    st.dataframe(dataCertds41, use_container_width=True, hide_index=True)
 
 if selected == "Empleados":
     st.title("Empleados")
     st_lottie(lottie_employee, height=250, key = "employee")
     # Employees section
     
+    form.registrar_usuario()
+
     rows = qf.run_query("SELECT * FROM proyecto_semestral.empleado")
     st.markdown("""
     <style>
@@ -107,6 +86,9 @@ if selected == "Vehículos":
     # Vehicles section
     st.title("Vehículos")
     st.write("En esta sección se muestran los vehículos de la empresa Aljibe.")
+
+    form.registrar_vehiculo()
+
     vehiculos = qf.run_query("SELECT * FROM proyecto_semestral.vehiculo")
 
     st.markdown("""
@@ -178,7 +160,7 @@ if selected == "Rendiciones":
 
     st.dataframe(dataRendiciones, use_container_width=True, hide_index=True)
 
-if selected == "Recorridos":
+if selected == "Historial de Recorridos":
     # Previous routes section
     st.title("Recorridos anteriores")
     st.write("En esta sección se muestran los recorridos anteriores de los vehículos de la empresa Aljibe.")
@@ -217,6 +199,41 @@ if selected == "Cambios de vehículo":
     dataCambios.columns = ["rut_conductor","patente","fecha_inicio","fecha_termino","motivo_cambio","autor_cambio"]
 
     st.dataframe(dataCambios, use_container_width=True, hide_index=True)
+
+if selected == "Conductores":
+    # Drivers section
+    st.title("Conductores")
+    st.write("En esta sección se muestran los conductores de la empresa Aljibe.")
+    conductores = qf.run_query("SELECT c.rut_conductor AS rut_conductor, e.nombres_empleado AS nombre, e.apellido1_empleado AS apellido_paterno, e.apellido2_empleado AS apellido_materno, l.tipo_licencia AS tipo_licencia, l.fecha_ven_licencia AS fecha_ven_licencia, ca.fecha_ven_carnet AS fecha_ven_carnet, c.certificado_ds41 AS certificado_ds41 FROM proyecto_semestral.conductor c JOIN proyecto_semestral.empleado e ON c.rut_conductor = e.rut_empleado JOIN proyecto_semestral.licencia l ON c.id_licencia = l.id_licencia JOIN proyecto_semestral.carnet ca ON c.id_carnet = ca.id_carnet;")
+
+    st.markdown("""
+    <style>
+    .big-font {
+        font-size: 22px !important;
+    }
+    </style>
+    <p class="big-font">Todos los conductores</p>
+    """, unsafe_allow_html=True)
+
+    dataConductores = pd.DataFrame(conductores)
+    dataConductores.columns = ["rut_conductor","nombre_conductor","apellido1_conductor","apellido2_conductor","tipo_licencia","fecha_ven_lic","fecha_ven_carnet","certificado_ds41"]
+
+    st.dataframe(dataConductores, use_container_width=True, hide_index=True)
+
+    st.markdown("""
+    <style>
+    .big-font {
+        font-size: 22px !important;
+    }
+    </style>
+    <p class="big-font">Conductores con certificado DS41</p>
+    """, unsafe_allow_html=True)
+
+    conductoresds41 = qf.run_query("SELECT c.rut_conductor AS rut_conductor, e.nombres_empleado AS nombre, e.apellido1_empleado AS apellido_paterno, e.apellido2_empleado AS apellido_materno, l.tipo_licencia AS tipo_licencia, c.certificado_ds41 AS certificado_ds41 FROM proyecto_semestral.conductor c JOIN proyecto_semestral.empleado e ON c.rut_conductor = e.rut_empleado JOIN proyecto_semestral.licencia l ON l.id_licencia = c.id_licencia WHERE c.certificado_ds41 = TRUE;")
+    dataConductoresds41 = pd.DataFrame(conductoresds41)
+    dataConductoresds41.columns = ["rut_conductor","nombre_conductor","apellido1_conductor","apellido2_conductor","tipo_licencia","certificado_ds41"]
+
+    st.dataframe(dataConductoresds41, use_container_width=True, hide_index=True)
 
     
 
