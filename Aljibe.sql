@@ -99,7 +99,7 @@ CREATE TABLE proyecto_semestral.conductor(
 CREATE TABLE proyecto_semestral.cambio(
     ID_cambio SERIAL PRIMARY KEY,
     fecha_cambio DATE DEFAULT NOW(),
-    motivo_cambio TEXT CHECK (motivo_cambio IN ('Falla mecanica','Mantencion preventiva','Capacidad tecnica','Otro')) NOT NULL
+    motivo_cambio TEXT CHECK (motivo_cambio IN ('Falla mecanica','Mantencion preventiva','Capacidad tecnica','Otro')) NOT NULL,
     autor_cambio TEXT
 );
 
@@ -119,7 +119,7 @@ CREATE TABLE proyecto_semestral.ruta(
 
 CREATE TABLE proyecto_semestral.estanque(
     ID SERIAL PRIMARY KEY,
-    material TEXT CHECK (material IN ('Plastico','Fibra de vidrio',)) NOT NULL,
+    material TEXT CHECK (material IN ('Plastico','Fibra de vidrio','acero inoxidable','fierro')) NOT NULL,
     capacidad TEXT NOT NULL
 );
 

@@ -207,6 +207,8 @@ if selected == "Cambios de vehículo":
 
     st.dataframe(dataCambios, use_container_width=True, hide_index=True)
 
+    form.registrar_cambio()
+
 if selected == "Conductores":
     # Drivers section
     st.title("Conductores")

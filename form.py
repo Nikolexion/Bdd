@@ -174,3 +174,21 @@ def registrar_cambio_vehiculo():
             data = (rut_empleado, patente, fecha)
             qf.insert_data(query, data)
             st.success("Cambio de vehículo registrado con éxito.", icon="🎉")
+
+def registrar_cambio():
+    with st.form(key='signupCambio', clear_on_submit=True):
+        st.subheader('Ingrese los datos del nuevo cambio.')
+        st.write('Los datos marcados con (*) son obligatorios.')
+        fecha_cambio = st.date_input('Fecha del cambio (opcional, por defecto es hoy)')
+        motivo_cambio = st.selectbox('Motivo del cambio *', ('Falla mecanica', 'Mantencion preventiva', 'Capacidad tecnica', 'Otro'))
+        autor_cambio = st.text_input('Autor del cambio', placeholder='Ingrese el nombre del autor del cambio *')
+        h_signup = st.form_submit_button('Registrar')
+        if h_signup:
+            query = """
+            INSERT INTO proyecto_semestral.cambio (fecha_cambio, motivo_cambio, autor_cambio) 
+            VALUES (%s, %s, %s)
+            """
+            # Si el usuario no selecciona una fecha, se usa None para que la base de datos use el valor predeterminado
+            data = (fecha_cambio if fecha_cambio else None, motivo_cambio, autor_cambio)
+            qf.insert_data(query, data)
+            st.success("Cambio registrado con éxito.", icon="🎉")
